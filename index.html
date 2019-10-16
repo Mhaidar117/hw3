@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Hw3: Pixaby Search</title>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src = "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" ></script> 
+   <link href="css/styles.css" rel="stylesheet" type="text/css" />
+  <script>
+  /*global $*/
+  /*global _*/
+  
+      $(document).ready(function(){
+        //ananymos function
+        $("#searchBut").on("click",function(){
+            
+            checkInput($("#name").val()); // check the form
+            search(); // search for name
+        })
+      });//document ready
+      
+      
+      //search function for api
+      function search() {  
+              $.ajax({
+        //https://www.behindthename.com/api/lookup.json?name=mary&key=mi298168664
+                method: "GET",
+                url: "https://www.behindthename.com/api/lookup.json?",
+                dataType: "json",
+                data: { "key": "mi298168664",
+                         "name": $("#name").val(),},
+                
+                success: function(result,status) {
+                    console.log(result);
+                    console.log($("#name").val())
+                  $("#nameDisplay").html(result[0].name);
+                  $("#usagesDisplay").html(result[0].usages[0].usage_full);
+                  $("#genderDisplay").html(result[0].usages[0].usage_gender);
+                                                // <br><img src='${result.hits[0].webformatURL}'>`);
+                    $("#genderDisplay").on("change",changeColor(result[0].usages[0].usage_gender))
+
+                  }
+          
+                });//ajax
+     
+    
+      }
+      
+      //check that the user's input is a string
+      //check for string length, no spaces, 
+      function checkInput(name) {
+          var spaceCheck = name.indexOf(" ");
+          console.log(spaceCheck);
+          text = $("#name").val();
+          console.log(text);
+            var x, text="";
+            if (name.length < 3) { //if name is too short
+                // alert(name);
+                console.log("not enough characters");
+                text += ($("#name").val() + " is not valid, not enought characters "); // display error
+                    //update fields
+                $("#nameDisplay").html("")
+                $("#usagesDisplay").html("")
+                $("#genderDisplay").html("")
+                changeColor();
+            }else if(name == " "){ //if no input
+                console.log("no input")
+                text += " please enter a name";
+                    //update fields
+                $("#nameDisplay").html("")
+                $("#usagesDisplay").html("")
+                $("#genderDisplay").html("")
+                changeColor();
+            }else if(spaceCheck > 0){ //check for space in name
+                console.log("space error")
+                text += $("#name").val() + " is not valid, please only enter one name.";
+                    //update fields
+                $("#nameDisplay").html("")
+                $("#usagesDisplay").html("")
+                $("#genderDisplay").html("")
+                changeColor();
+                
+            }
+            document.getElementById("error").innerHTML = text;
+               
+        }
+      
+      
+      //change color for gender
+       function changeColor(gender){
+           if(gender == 'm'){
+                document.body.style.background = "#ccffff";
+            }else if(gender == 'f'){
+                document.body.style.background = "#ffcccc";
+            }else{
+               document.body.style.background = "white";
+            }
+           
+        }
+  </script>
+  
+  
+  
+</head>
+<div id = "wrap">
+<body id="bodyID">
+  <h1 id ="title">Name search </h1>
+  <div class = "searchBox"id="searchBox">
+  <p class = "output1">keyword: <input id="name" type= "text"> <button id="searchBut"> search </button> </p>
+  </div>
+  <div class="selection">
+  <br><br>
+ </div> 
+</div> 
+  
+ 
+
+</head>
+<body>
+    <!--place holder-->
+name: <span id="nameDisplay"></span> <span id="error"></span> 
+<br>
+Usages: <span id="usagesDisplay"></span> 
+<br>
+Gender: <span id="genderDisplay"></span> 
+</body>
+</html>
